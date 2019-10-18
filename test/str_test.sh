@@ -1,9 +1,9 @@
 #!/bin/bash
 
-scriptDir=$(cd `dirname $0`; pwd)
+MODULE_DIR="$(cd `dirname $0`; pwd)/../modules"
 
-. $scriptDir/index.sh
-. $scriptDir/assert.sh
+. "$MODULE_DIR/str.sh"
+. "$MODULE_DIR/assert.sh"
 
 test_strlen() {
     local s="hello world";
