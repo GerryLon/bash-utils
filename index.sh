@@ -1,9 +1,7 @@
 #!/bin/bash
 
-set -eu
-set -o pipefail
-
-scriptDir=$(cd `dirname $0`; pwd)
+# set -eu
+# set -o pipefail
 
 strlen() {
   if [[ $# -eq 0 ]]; then
@@ -11,13 +9,13 @@ strlen() {
     return 0;
   fi
   local s="$1";
-  echo ${#s};
+  echo -n ${#s};
 }
 
 # substr(str, startIndex, [length])
 substr() {
   if [[ $# -eq 0 ]]; then
-    echo "";
+    echo -n "";
     return;
   fi
 
@@ -26,22 +24,47 @@ substr() {
   if [[ $# -ge 1 ]]; then
     s="$1";
   else # substr
-    echo "";
+    echo -n "";
     return;
   fi
 
   if [[ $# -ge 2 ]]; then
     startIndex="$2";
   else # substr arg1
-    echo $s;
+    echo -n $s;
     return;
   fi
 
   if [[ $# -ge 3 ]]; then
     length="$3"
   else # substr arg1 arg2
-    echo ${s:$startIndex}
+    echo -n ${s:$startIndex}
     return;
   fi
-  echo ${s:$startIndex:$length}
+  echo -n ${s:$startIndex:$length}
+}
+
+trim() {
+	if [[ $# -lt 1 ]]; then
+		echo -n "";
+		return;
+	fi
+
+	local s=$(echo $1 | sed -r 's/^\s*|\s*$//g')
+	echo -n "$s"
+}
+
+# str_repeat(str, num)
+str_repeat() {
+	if [[ $# -lt 1 ]]; then
+		echo -n "";
+		return;
+	fi
+	local s="$1" n=${2:-1}
+	local i
+	local ret=''
+	for ((i=0; i<$n; i++)); do
+		ret="$ret$s";
+	done
+	echo -n $ret;
 }
