@@ -9,7 +9,7 @@ strlen() {
     return 0;
   fi
   local s="$1";
-  echo -n ${#s};
+  echo -n "${#s}";
 }
 
 # substr(str, startIndex, [length])
@@ -31,17 +31,37 @@ substr() {
   if [[ $# -ge 2 ]]; then
     startIndex="$2";
   else # substr arg1
-    echo -n $s;
+    echo -n "$s";
     return;
   fi
 
   if [[ $# -ge 3 ]]; then
     length="$3"
   else # substr arg1 arg2
-    echo -n ${s:$startIndex}
+    echo -n "${s:$startIndex}";
     return;
   fi
-  echo -n ${s:$startIndex:$length}
+  echo -n "${s:$startIndex:$length}";
+}
+
+ltrim() {
+	if [[ $# -lt 1 ]]; then
+		echo -n "";
+		return;
+	fi
+
+	local s="$(echo $1 | sed -r 's/^\s*//g')"
+	echo -n "$s"
+}
+
+rtrim() {
+	if [[ $# -lt 1 ]]; then
+		echo -n "";
+		return;
+	fi
+
+	local s="$(echo $1 | sed -r 's/\s*$//g')"
+	echo -n "$s"
 }
 
 trim() {
@@ -50,7 +70,7 @@ trim() {
 		return;
 	fi
 
-	local s=$(echo $1 | sed -r 's/^\s*|\s*$//g')
+	local s="$(echo $1 | sed -r 's/^\s*|\s*$//g')"
 	echo -n "$s"
 }
 
@@ -66,5 +86,23 @@ str_repeat() {
 	for ((i=0; i<$n; i++)); do
 		ret="$ret$s";
 	done
-	echo -n $ret;
+	echo -n "$ret";
+}
+
+strtolower() {
+	if [[ $# -lt 1 ]]; then
+		echo -n "";
+		return;
+	fi
+	local s=$(echo "$1" | tr 'a-z' 'A-Z')
+	echo -n "$s"
+}
+
+strtoupper() {
+	if [[ $# -lt 1 ]]; then
+		echo -n "";
+		return;
+	fi
+	local s=$(echo "$1" | tr 'A-Z' 'a-z')
+	echo -n "$s"
 }

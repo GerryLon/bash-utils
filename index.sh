@@ -3,6 +3,8 @@
 # set -eu
 # set -o pipefail
 
+[[ "$__MODULE_SH__" == "$(basename $0)" ]] && return || __MODULE_SH__="$(basename $0)";
+
 # scriptDir=$(cd `dirname $0`; pwd);
 MODULE_DIR="$(cd `dirname $0`; pwd)/modules"
 
