@@ -15,6 +15,6 @@ _FINAL_SOURCE_FILE="$_BASH_UTILS_TMP_DIR/$_MODULE_HASH_KEY"
 echo "load module: $_SCRIPT_ABS_DIR/$_SOURCE_FILE_BASENAME"
 
 # scriptDir=$(cd `dirname $0`; pwd);
-MODULE_DIR="$(cd `dirname $_SOURCE_FILE`; pwd)/modules"
+MODULE_DIR="$_SCRIPT_ABS_DIR/modules"
 
 . "$MODULE_DIR/str.sh"
