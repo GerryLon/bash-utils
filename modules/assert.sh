@@ -1,35 +1,73 @@
 #!/bin/bash
 
-# assertExitCode(returnValue, msg)
-# 一般用法: command; assert $?
+set -eE -o functrace
+
+_traceFailure() {
+    local func="$1"
+    local lineno="$2"
+    local msg="$3"
+    echo "Failed at func:$func, linenum:$lineno: msg: $msg"
+}
+trap '_traceFailure ${FUNCNAME} ${LINENO} "$BASH_COMMAND"' ERR
+
+# usage: command; assert $? expectedExitCode
 assertExitCode() {
     if [[ $# -lt 1 ]]; then
         echo "assert params invalid";
-        exit 1;
+        return 1;
     fi
 
-    if [[ $# -ge 1 ]]; then
-        local msg="Assert Error!"
-        if [[ $# -ge 2 ]]; then
-            msg="$2"
-        fi
+    local expectedExitCode=0;
+    if [[ $# -ge 2 ]]; then
+        expectedExitCode=$2;
+    fi
 
-        if [[ $1 -ne 0 ]]; then # 判断是不是0, 不是就报错
-            echo $msg
-            exit 2
-        fi
+    if [[ $1 -ne $expectedExitCode ]]; then
+        echo "[assertExitCode]: expected: $expectedExitCode, got: $1";
+        return 2;
     fi
 }
 
 assertStrEqual() {
     if [[ $# -ne 2 ]]; then
         echo "usage: assertStrEqual str1 str2";
-        exit 1;
+        return 1;
     fi
-    [[ "$1" == "$2" ]] || { echo "[assertStrEqual]: $1 and $2 are not equal"; exit 1; }
+    if [[ "$1" != "$2" ]]; then
+        echo "[assertStrEqual]: $1 and $2 are not equal";
+        return 2;
+    fi
 }
 
-# assert为assertStrEqual的别名
+assertStrNotEqual() {
+    if [[ $# -ne 2 ]]; then
+        echo "usage: assertStrNotEqual str1 str2";
+        return 1;
+    fi
+    if [[ "$1" == "$2" ]]; then
+        echo "[assertStrNotEqual]: $1 and $2 are equal";
+        return 2;
+    fi
+}
+
+# assert is an alias of assertStrEqual
+# when assert fails, exit directly
 assert() {
-    assertStrEqual $@
+    assertStrEqual $@;
+    local ret=$?;
+    [[ $ret -ne 0 ]] && exit $ret;
+}
+
+assertNot() {
+    assertStrEqual $@;
+    local ret=$?;
+    [[ $ret -eq 0 ]] && exit $ret;
+}
+
+assertOnlyShowMsg() {
+    assertStrEqual $@;
+}
+
+assertNotOnlyShowMsg() {
+    assertStrNotEqual $@;
 }
