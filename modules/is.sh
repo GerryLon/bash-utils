@@ -31,11 +31,11 @@ is_file() {
 	return $?;
 }
 
-is_dir() [
+is_dir() {
 	[[ $# -eq 0 ]] && return 1;
 	test -d $1;
 	return $?;
-]
+}
 
 is_exist() {
 	[[ $# -eq 0 ]] && return 1;
