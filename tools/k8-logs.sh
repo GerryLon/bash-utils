@@ -38,11 +38,15 @@ containerName=''
 stdoutPath=''
 command4log=''
 interactively=0 # 命令是否是交互式的, 如tail -f这种的
-_datetime=$(date +'%Y%m%d%H%M%S')
-tmpLogFile="/tmp/$resourceName-$_datetime.log"
-tmpPidFile="/tmp/$resourceName-$_datetime.pid"
+_suffix=$$
+tmpLogFile="/tmp/$resourceName-$_suffix.log"
+tmpPidFile="/tmp/$resourceName-$_suffix.pid"
 
-rm -f "$tmpLogFile" "$tmpPidFile"
+clean() {
+	rm -f "$tmpLogFile" "$tmpPidFile"
+}
+
+trap "clean" INT TERM EXIT
 
 # 跳过resourceName
 shift 1
