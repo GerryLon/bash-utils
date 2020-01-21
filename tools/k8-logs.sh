@@ -6,6 +6,7 @@ set -o pipefail
 # 查看k8s中容器日志
 
 Program="$0"
+ProgramBaseName=$(basename $Program)
 
 usage() {
 	cat <<EOF
@@ -41,12 +42,23 @@ interactively=0 # 命令是否是交互式的, 如tail -f这种的
 _suffix=$$
 tmpLogFile="/tmp/$resourceName-$_suffix.log"
 tmpPidFile="/tmp/$resourceName-$_suffix.pid"
+tmpCleanLogFile="/tmp/$ProgramBaseName-clean.log"
 
-clean() {
-	rm -f "$tmpLogFile" "$tmpPidFile"
+cleanLog() {
+	echo "$(date) $1" >> "$tmpCleanLogFile"
 }
 
-trap "clean" INT TERM EXIT
+clean() {
+	for i in `cat "$tmpPidFile"`; do
+		cleanLog "kill $i"
+		kill -9 "$i"
+	done
+	cleanLog "remove tmp files"
+	rm -f "$tmpLogFile" "$tmpPidFile"
+	exit
+}
+
+trap "clean" EXIT
 
 # 跳过resourceName
 shift 1
@@ -120,7 +132,8 @@ main() {
 			done
 		fi
 	fi
-	exec $command4log $tmpLogFile
+
+	$command4log $tmpLogFile
 }
 
 main
